@@ -23,7 +23,7 @@ function CommonForm({
   isBtnDisabled,
 }) {
   const { pathname } = useLocation();
-  const [otpSent, setOtpSent] = useState(false);
+  const [otpSent, setOtpSent] = useState(true);
   const { toast } = useToast();
   const sendOtp = (e, formData) => {
     e.preventDefault();
@@ -49,7 +49,7 @@ function CommonForm({
     axios
       .post(`/auth/send-otp`, { mobile, email })
       .then((res) => {
-        if (res.data.status === "success") {
+        if (res.data.success) {
           setOtpSent(true);
           toast({
             title: "OTP sent successfully",
@@ -70,6 +70,7 @@ function CommonForm({
 
     switch (getControlItem.componentType) {
       case "input":
+       
         element = (
           <Input
             name={getControlItem.name}
@@ -169,10 +170,10 @@ function CommonForm({
           </div>
         ))}
       </div>
-      {!otpSent && pathname.split("/")[2] === "register" ? (
+      {!otpSent && pathname.includes("register") ? (
         <Button
           type="button"
-          className="mt-2 w-full"
+          className="mt-2 w-full" 
           onClick={(e) => sendOtp(e, formData)}
         >
           Send OTP

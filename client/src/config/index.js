@@ -14,11 +14,25 @@ export const registerFormControls = [
     type: "email",
   },
   {
+    name: "emailOtp",
+    label: "Email OTP",
+    placeholder: "Enter your email OTP",
+    componentType: "input",
+    type: "text",
+  },
+  {
     name: "mobile",
     label: "Mobile",
     placeholder: "Enter your Phone number",
     componentType: "input",
     type: "Number",
+  },
+  {
+    name: "mobileOtp",
+    label: "Mobile OTP",
+    placeholder: "Enter your mobile OTP",
+    componentType: "input",
+    type: "text",
   },
   {
     name: "password",
@@ -149,7 +163,7 @@ export const shoppingViewHeaderMenuItems = [
     label: "Search",
     path: "/search",
   },
-  
+
   {
     id: "about",
     label: "About",

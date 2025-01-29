@@ -9,6 +9,8 @@ const User = require("../../models/User");
 const MobileOtp = require("../../models/mobileOtp");
 const EmailOtp = require("../../models/emailOtp");
 const { OAuth2Client } = require("google-auth-library");
+const emailOtp = require("../../models/emailOtp");
+const mobileOtp = require("../../models/mobileOtp");
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -42,16 +44,22 @@ const googleLoginUser = async (req, res) => {
           "CLIENT_SECRET_KEY",
           { expiresIn: "30d" }
         );
-        res.cookie("token", token, { httpOnly: true, secure: false }).json({
-          success: true,
-          message: "Logged in successfully",
-          user: {
-            email: checkUser.email,
-            role: checkUser.role,
-            id: checkUser._id,
-            userName: checkUser.userName,
-          },
-        });
+        res
+          .cookie("token", token, {
+            httpOnly: true,
+            secure: false,
+            sameSite: "none",
+          })
+          .json({
+            success: true,
+            message: "Logged in successfully",
+            user: {
+              email: checkUser.email,
+              role: checkUser.role,
+              id: checkUser._id,
+              userName: checkUser.userName,
+            },
+          });
       } else {
         res.status(400).json({
           success: false,
@@ -75,9 +83,68 @@ const getAllUsers = async (req, res) => {
 };
 //register
 const registerUser = async (req, res) => {
-  const { userName, email, mobile, password } = req.body;
+  const { userName, email, mobile, password, emailOtp, mobileOtp } = req.body;
+  console.log(req.body);
+  try {
+    const checkUser = await User.findOne({ email });
+    if (checkUser)
+      return res.json({
+        success: false,
+        message: "User Already exists with the same email! Please try again",
+      });
 
-  console.log(userName, email, mobile, password);
+    const user = await User.findOne({ mobile });
+    if (user)
+      return res.json({
+        success: false,
+        message: "User Already exists with the same mobile! Please try again",
+      });
+    const createdEmailOtp = await EmailOtp.findOne({ email });
+    const createdMobileOtp = await MobileOtp.findOne({ mobile });
+    console.log(createdEmailOtp.otp, createdMobileOtp.otp);
+    console.log(emailOtp, mobileOtp);
+
+    if (!createdEmailOtp || !createdMobileOtp)
+      return res.json({ success: false, message: "Some error occured" });
+    if (
+      parseInt(emailOtp) !== createdEmailOtp.otp ||
+      parseInt(mobileOtp) !== createdMobileOtp.otp
+    ) {
+      console.log("otp not matched");
+      return res.json({
+        success: false,
+        message: "Invalid OTP",
+      });
+    }
+
+    if (
+      createdEmailOtp.otp === parsedInt(emailOtp) &&
+      createdMobileOtp.otp === parseInt(mobileOtp)
+    ) {
+      console.log("otp matched");
+      // await EmailOtp.deleteMany({ email });
+      // await MobileOtp.deleteMany({ mobile });
+      // const hashPassword = await bcrypt.hash(password, 12);
+      // const newUser = new User({
+      //   userName,
+      //   email,
+      //   mobile,
+      //   password: hashPassword,
+      // });
+
+      // await newUser.save();
+      // res.json({
+      //   success: true,
+      //   message: "Registration successful",
+      // });
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(500).json({
+      success: false,
+      message: "Some error occured",
+    });
+  }
   // try {
   //   const checkUser = await User.findOne({ email });
   //   if (checkUser)
@@ -169,7 +236,6 @@ const logoutUser = (req, res) => {
 };
 
 const sendRegisterOtp = async (req, res) => {
-  console.log("register otp");
   try {
     const { email, mobile } = req.body;
     console.log(mobile, email);
@@ -236,10 +302,10 @@ const sendRegisterOtp = async (req, res) => {
     // };
     // console.log(options, "options");
     // await fast2sms.send(options);
-    client.verify.v2
-      .services("VA980e22b9808cd12c4e0e7887b4ba4436")
-      .verifications.create({ to: "+917012082841", channel: "sms" })
-      .then((verification) => console.log(verification.sid));
+    // client.verify.v2
+    //   .services("VA980e22b9808cd12c4e0e7887b4ba4436")
+    //   .verifications.create({ to: "+917012082841", channel: "sms" })
+    //   .then((verification) => console.log(verification.sid));
 
     res.status(200).json({
       success: true,

@@ -13,7 +13,7 @@ export const registerUser = createAsyncThunk(
 
   async (formData) => {
     const response = await axios.post(
-      "http://localhost:5000/api/auth/register",
+      `${import.meta.env.VITE_API_URL}auth/register`,
       formData,
       {
         withCredentials: true,
@@ -28,7 +28,7 @@ export const loginUser = createAsyncThunk(
 
   async (formData) => {
     const response = await axios.post(
-      "http://localhost:5000/api/auth/login",
+      `${import.meta.env.VITE_API_URL}auth/login`,
       formData,
       {
         withCredentials: true,
@@ -44,7 +44,7 @@ export const googleLoginUser = createAsyncThunk(
   async (googleToken, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/google",
+        `${import.meta.env.VITE_API_URL}auth/google`,
         {
           googleToken,
         }
@@ -58,7 +58,7 @@ export const googleLoginUser = createAsyncThunk(
 
 export const logoutUser = createAsyncThunk("/auth/logout", async () => {
   const response = await axios.post(
-    "http://localhost:5000/api/auth/logout",
+    `${import.meta.env.VITE_API_URL}auth/logout`,
     {},
     {
       withCredentials: true,
@@ -69,7 +69,7 @@ export const logoutUser = createAsyncThunk("/auth/logout", async () => {
 
 export const checkAuth = createAsyncThunk("/auth/checkauth", async () => {
   const response = await axios.get(
-    "http://localhost:5000/api/auth/check-auth",
+    `${import.meta.env.VITE_API_URL}auth/check-auth`,
     {
       withCredentials: true,
       headers: {
