@@ -59,6 +59,14 @@ export const updateCartQuantity = createAsyncThunk(
     return response.data;
   }
 );
+export const clearCart = createAsyncThunk(
+  "cart/clear-cart",
+  async (user) => {
+    const userId = user.id;
+    const response = await axios.post(`${import.meta.env.VITE_API_URL}shop/cart/clear-cart/${userId}`);
+    return response.data;
+  }
+)
 
 const shoppingCartSlice = createSlice({
   name: "shoppingCart",
@@ -107,6 +115,17 @@ const shoppingCartSlice = createSlice({
         state.cartItems = action.payload.data;
       })
       .addCase(deleteCartItem.rejected, (state) => {
+        state.isLoading = false;
+        state.cartItems = [];
+      })
+      .addCase(clearCart.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(clearCart.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.cartItems = action.payload.data;
+      })
+      .addCase(clearCart.rejected, (state) => {
         state.isLoading = false;
         state.cartItems = [];
       });

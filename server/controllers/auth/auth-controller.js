@@ -101,8 +101,6 @@ const registerUser = async (req, res) => {
       });
     const createdEmailOtp = await EmailOtp.findOne({ email });
     const createdMobileOtp = await MobileOtp.findOne({ mobile });
-    console.log(createdEmailOtp.otp, createdMobileOtp.otp);
-    console.log(emailOtp, mobileOtp);
 
     if (!createdEmailOtp || !createdMobileOtp)
       return res.json({ success: false, message: "Some error occured" });
@@ -118,25 +116,25 @@ const registerUser = async (req, res) => {
     }
 
     if (
-      createdEmailOtp.otp === parsedInt(emailOtp) &&
+      createdEmailOtp.otp === parseInt(emailOtp) &&
       createdMobileOtp.otp === parseInt(mobileOtp)
     ) {
       console.log("otp matched");
-      // await EmailOtp.deleteMany({ email });
-      // await MobileOtp.deleteMany({ mobile });
-      // const hashPassword = await bcrypt.hash(password, 12);
-      // const newUser = new User({
-      //   userName,
-      //   email,
-      //   mobile,
-      //   password: hashPassword,
-      // });
+      await EmailOtp.deleteMany({ email });
+      await MobileOtp.deleteMany({ mobile });
+      const hashPassword = await bcrypt.hash(password, 12);
+      const newUser = new User({
+        userName,
+        email,
+        mobile,
+        password: hashPassword,
+      });
 
-      // await newUser.save();
-      // res.json({
-      //   success: true,
-      //   message: "Registration successful",
-      // });
+      await newUser.save();
+      res.json({
+        success: true,
+        message: "Registration successful",
+      });
     }
   } catch (e) {
     console.log(e);

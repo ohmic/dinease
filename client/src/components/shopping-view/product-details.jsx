@@ -21,7 +21,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
   const { cartItems } = useSelector((state) => state.shopCart);
   const { reviews } = useSelector((state) => state.shopReview);
   const navigate = useNavigate();
-
+  const product = productDetails;
   const { toast } = useToast();
 
   function handleRatingChange(getRating) {
@@ -55,7 +55,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
         productId: getCurrentProductId,
         quantity: 1,
       })
-    ).then((data) => {
+    ).then((data) => {     console.log("Dispatch result:", data);
       if (data?.payload?.success) {
         dispatch(fetchCartItems(user?.id));
         toast({
@@ -158,13 +158,16 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
               </Button>
             ) : user ? (
               <Button
-                onClick={() =>
-                  handleAddtoCart(product?._id, product?.totalStock)
-                }
+              onClick={(e) => {
+                e.stopPropagation();
+                handleAddToCart(product?._id, product?.TotalStock);
+              }}
+              
                 className="w-full"
               >
                 Add to cart
               </Button>
+              
             ) : (
               <Button
                 onClick={() => navigate("/auth/login")}

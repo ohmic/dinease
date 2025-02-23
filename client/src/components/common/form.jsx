@@ -23,10 +23,12 @@ function CommonForm({
   isBtnDisabled,
 }) {
   const { pathname } = useLocation();
-  const [otpSent, setOtpSent] = useState(true);
+  const [otpSentLoading, setOtpSentLoading] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
   const { toast } = useToast();
   const sendOtp = (e, formData) => {
     e.preventDefault();
+    setOtpSentLoading(true);
     const { mobile, email } = formData;
     if (
       mobile.length !== 10 ||
@@ -38,6 +40,7 @@ function CommonForm({
         title: "Invalid mobile number",
         variant: "destructive",
       });
+      setOtpSentLoading(false)
       return;
     }
     if (!email) {
@@ -174,6 +177,7 @@ function CommonForm({
         <Button
           type="button"
           className="mt-2 w-full" 
+          disabled={otpSentLoading}
           onClick={(e) => sendOtp(e, formData)}
         >
           Send OTP

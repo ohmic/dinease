@@ -35,7 +35,8 @@ function UserCartWrapper({ cartItems, setOpenCartSheet }) {
           <span className="font-bold">₹ {totalCartAmount}</span>
         </div>
       </div>
-      <Button
+      {cartItems && cartItems.length > 0 && (
+        <Button
         onClick={() => {
           navigate("/checkout");
           setOpenCartSheet(false);
@@ -44,6 +45,8 @@ function UserCartWrapper({ cartItems, setOpenCartSheet }) {
       >
         Checkout
       </Button>
+      )}
+      
     </SheetContent>
   );
 }
